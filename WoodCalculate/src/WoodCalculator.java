@@ -7,7 +7,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 public class WoodCalculator {
 	
@@ -34,7 +36,7 @@ public class WoodCalculator {
 				// do cut in requests
 				for(Wood c : result.contains) {
 					for(Request req : reqs) {
-						if(c.length == req.wood.length && c.width == req.wood.width) {
+						if(c.equals(req.wood)) {
 							req.count--;
 							break;
 						}
@@ -61,6 +63,7 @@ public class WoodCalculator {
 	
 	private static void printResult(List<Wood>src, List<Result> results, FileWriter fileWriter) throws IOException {
 		Map<Integer, Integer> resultMap = new HashMap<Integer, Integer>();
+		Map<Wood, Integer> remainMap = new TreeMap<Wood, Integer>();
 		int totalRemain = 0;
 		
 		fileWriter.write("\nResults----------------------------------------------------\n\n");
@@ -80,10 +83,17 @@ public class WoodCalculator {
 				fileWriter.write(output + "\n");
 			}
 			for(Wood w : r.remains) {
-				output = "Remains: " + w.length + " / " + w.width;
-				totalRemain += w.length*w.width;
-				System.out.println(output);
-				fileWriter.write(output + "\n");
+				if(w.length > 0 && w.width > 0) {
+					output = "Remains: " + w.length + " / " + w.width;
+					totalRemain += w.length*w.width;
+					System.out.println(output);
+					fileWriter.write(output + "\n");
+					if(remainMap.get(w) == null) {
+						remainMap.put(w, 1);
+					} else {
+						remainMap.put(w, remainMap.get(w) + 1);
+					}
+				}
 			}
 			System.out.println("----------------------------------------------------");
 			fileWriter.write("----------------------------------------------------\n");
@@ -92,13 +102,21 @@ public class WoodCalculator {
 		System.out.println("Total Need:");
 		fileWriter.write("\n Total Need: \n");
 		for(int i = 0; i < src.size(); i++) {
-			String output = "Type: " + src.get(i).length + " / " + src.get(i).width + ": " + resultMap.get(i) + " pieces";
+			String output = "Type: " + src.get(i).length + " / " + src.get(i).width + ": " + resultMap.get(i) + "  pieces";
 			System.out.println(output);
 			fileWriter.write(output + "\n");
 		}
 		
-		System.out.println("TotalRemain: " + totalRemain);
-		fileWriter.write("TotalRemain: " + totalRemain + "\n");
+		System.out.println("\nRemain List: ");
+		fileWriter.write("\nRemain List: \n");
+		for(Entry<Wood, Integer> e : remainMap.entrySet()) {
+			String output = e.getKey().length + " x " + e.getKey().width + ":       - " + e.getValue() + "  pieces";
+			System.out.println(output);
+			fileWriter.write(output + "\n\n");
+		}
+		
+		System.out.println("\nTotalRemain: " + totalRemain);
+		fileWriter.write("\nTotalRemain: " + totalRemain + "\n");
 	}
 	
 	private static Result getCutResult(List<Wood> src, List<Request> reqs) {
@@ -208,13 +226,25 @@ public class WoodCalculator {
 		return false;
 	}
 	
-	private static class Wood {
+	private static class Wood implements Comparable<Wood> {
 		public int length;
 		public int width;
 		
 		public Wood(int length, int width) {
 			this.length = length;
 			this.width = width;
+		}
+		
+		public boolean equals(final Wood w) {
+			return this.length == w.length && this.width == w.width;
+		}
+
+		@Override
+		public int compareTo(Wood o) {
+			if(this.length - o.length == 0) {
+				return o.width - this.width;
+			}
+			return o.length - this.length;
 		}
 	}
 	
@@ -241,10 +271,7 @@ public class WoodCalculator {
 	private static class RequestComparator implements Comparator<Request> {
 		@Override
 		public int compare(Request req1, Request req2) {
-			if(req2.wood.length - req1.wood.length == 0) {
-				return req2.wood.width - req1.wood.width;
-			}
-			return req2.wood.length - req1.wood.length;
+			return req1.wood.compareTo(req2.wood);
 		}
 	}
 }
