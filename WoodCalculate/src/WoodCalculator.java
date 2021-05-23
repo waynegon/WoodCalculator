@@ -4,7 +4,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class WoodCalculator {
@@ -30,18 +32,12 @@ public class WoodCalculator {
 				results.add(result);
 				
 				// do cut in requests
-				boolean found = false;
 				for(Wood c : result.contains) {
 					for(Request req : reqs) {
 						if(c.length == req.wood.length && c.width == req.wood.width) {
 							req.count--;
-							found = true;
 							break;
 						}
-					}
-					
-					if(found) {
-						break;
 					}
 				}
 			}
@@ -64,8 +60,16 @@ public class WoodCalculator {
 	}
 	
 	private static void printResult(List<Wood>src, List<Result> results, FileWriter fileWriter) throws IOException {
+		Map<Integer, Integer> resultMap = new HashMap<Integer, Integer>();
+		
 		fileWriter.write("\nResults----------------------------------------------------\n\n");
 		for(Result r : results) {
+			if(resultMap.get(r.type) == null) {
+				resultMap.put(r.type, 1);
+			} else {
+				resultMap.put(r.type, resultMap.get(r.type) + 1);
+			}
+			
 			String output = "Type: " + src.get(r.type).length + " / " + src.get(r.type).width;
 			System.out.println(output);
 			fileWriter.write(output + "\n");
@@ -81,6 +85,14 @@ public class WoodCalculator {
 			}
 			System.out.println("----------------------------------------------------");
 			fileWriter.write("----------------------------------------------------\n");
+		}
+		
+		System.out.println("Total Need:");
+		fileWriter.write("\n Total Need: \n");
+		for(int i = 0; i < src.size(); i++) {
+			String output = "Type: " + src.get(i).length + " / " + src.get(i).width + ": " + resultMap.get(i) + " pieces";
+			System.out.println(output);
+			fileWriter.write(output + "\n");
 		}
 	}
 	
