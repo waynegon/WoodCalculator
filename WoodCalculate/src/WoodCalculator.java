@@ -61,6 +61,7 @@ public class WoodCalculator {
 	
 	private static void printResult(List<Wood>src, List<Result> results, FileWriter fileWriter) throws IOException {
 		Map<Integer, Integer> resultMap = new HashMap<Integer, Integer>();
+		int totalRemain = 0;
 		
 		fileWriter.write("\nResults----------------------------------------------------\n\n");
 		for(Result r : results) {
@@ -80,6 +81,7 @@ public class WoodCalculator {
 			}
 			for(Wood w : r.remains) {
 				output = "Remains: " + w.length + " / " + w.width;
+				totalRemain += w.length*w.width;
 				System.out.println(output);
 				fileWriter.write(output + "\n");
 			}
@@ -94,6 +96,9 @@ public class WoodCalculator {
 			System.out.println(output);
 			fileWriter.write(output + "\n");
 		}
+		
+		System.out.println("TotalRemain: " + totalRemain);
+		fileWriter.write("TotalRemain: " + totalRemain + "\n");
 	}
 	
 	private static Result getCutResult(List<Wood> src, List<Request> reqs) {
