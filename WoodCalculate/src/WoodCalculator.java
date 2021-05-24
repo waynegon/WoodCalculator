@@ -149,25 +149,25 @@ public class WoodCalculator {
 	
 	private static void readWoodType(List<Wood> src) throws FileNotFoundException {
 		// read wood Type
-		File file = new File("WoodType.txt");
+		File file = new File("WoodType.csv");
 		Scanner reader = new Scanner(file);
 		while (reader.hasNextLine()) {
 			String data = reader.nextLine();
-			int value1 = Integer.valueOf(data.split(" ")[0]);
-			int value2 = Integer.valueOf(data.split(" ")[1]);
+			int value1 = Integer.valueOf(data.split(",")[0]);
+			int value2 = Integer.valueOf(data.split(",")[1]);
 			src.add(new Wood(Math.max(value1, value2), Math.min(value1, value2)));
 		}
 		reader.close();
 	}
 	
 	private static void readRequest(List<Request> reqs) throws FileNotFoundException {
-		File file = new File("Request.txt");
+		File file = new File("Request.csv");
 		Scanner reader = new Scanner(file);
 		while (reader.hasNextLine()) {
 			String data = reader.nextLine();
-			int count = Integer.valueOf(data.split(" ")[0]);
-			int value1 = Integer.valueOf(data.split(" ")[1]);
-			int value2 = Integer.valueOf(data.split(" ")[2]);
+			int count = Integer.valueOf(data.split(",")[0]);
+			int value1 = Integer.valueOf(data.split(",")[1]);
+			int value2 = Integer.valueOf(data.split(",")[2]);
 			reqs.add(new Request(count, new Wood(Math.max(value1, value2), Math.min(value1, value2))));
 		}
 		reader.close();
